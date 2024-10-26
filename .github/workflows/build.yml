@@ -79,7 +79,8 @@ jobs:
             Write-Output "$bin signed successfully"
         }
         Remove-Item -Path $env:Wap_Project_Directory\cr.pfx
-
+        Compress-Archive -Path $env:REPOROOT\sm -Destination $env:REPOROOT\snippet_manager.zip
+        
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
@@ -87,6 +88,6 @@ jobs:
         path: ${{env.REPOROOT}}/sm
 
     - name: Create Release
-      run: gh release create v1.0.0 "snippet_manager.zip"
+      run: gh release create v1.0.0 "$env:REPOROOT\snippet_manager.zip"
       env:
         repo-token: ${{secrets.GITHUB_TOKEN}}
