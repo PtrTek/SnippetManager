@@ -60,21 +60,23 @@ jobs:
       run: |
         $securepwd = ConvertTo-SecureString "$env:CODESIGN_PWD" -AsPlainText -Force
         $pfxpath = Join-Path -Path "$env:Wap_Project_Directory" -ChildPath cr.pfx
-        $flags = "PersistKeySet"
-        $folder = "Root"
-        $store = "CurrentUser"
-        Add-Type -AssemblyName System.Security
-        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($pfxpath, $securepwd, $flags)
-        $certstore = New-Object System.Security.Cryptography.X509Certificates.X509Store($folder, $store)
-        $certstore.Open('ReadWrite')
-        $certstore.Add($cert)
-        $certstore.Close()
-        Write-Output "Imported store certificate `"$pfxpath`" successfully."
-        # $buffer = [IO.File]::ReadAllBytes("$env:Wap_Project_Directory\cr.pfx")
-        # $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New($buffer, $env:CODESIGN_PWD)
+        #$flags = "PersistKeySet"
+        #$folder = "Root"
+        #$store = "CurrentUser"
+        #Add-Type -AssemblyName System.Security
+        #$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2($pfxpath, $securepwd, $flags)
+        #$certstore = New-Object System.Security.Cryptography.X509Certificates.X509Store($folder, $store)
+        #$certstore.Open('ReadWrite')
+        #$certstore.Add($cert)
+        #$certstore.Close()
+        #Write-Output "Imported store certificate `"$pfxpath`" successfully."
+        $buffer = [IO.File]::ReadAllBytes("$pfxpath")
+        $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New($buffer, $env:CODESIGN_PWD)
         $bins = Get-ChildItem -Path $env:REPOROOT\sm\* -Include *.exe,*.dll -Recurse
         foreach ($bin in $bins){
             Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com -FilePath $bin
+            signtool verify /pa "$bin"
+            Write-Output "$bin signed successfully"
         }
         Remove-Item -Path $env:Wap_Project_Directory\cr.pfx
 
