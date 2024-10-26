@@ -59,13 +59,25 @@ jobs:
     - name: Sign App and Remove the pfx
       run: |
         $securepwd = ConvertTo-SecureString "$env:CODESIGN_PWD" -AsPlainText -Force
-        Import-PfxCertficate -CertStoreLocation Cert:LocalMachine\Root -FilePath $env:Wap_Project_Directory\cr.pfx -Password "$securepwd"
-        $buffer = [IO.File]::ReadAllBytes("$env:Wap_Project_Directory\cr.pfx")
-        $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New($buffer, $env:CODESIGN_PWD)
-        
+        $absolutePfxFilePath = Join-Path -Path $env:Wap_Project_Directory -ChildPath cr.pfx
+        Write-Output "Importing store certificate '$absolutePfxFilePath'..."
+        Add-Type -AssemblyName System.Security
+        $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2
+        $cert.Import($absolutePfxFilePath, $securepwd, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]"PersistKeySet")
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store -ArgumentList "MY", CurrentUser
+        $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::"ReadWrite")
+        $store.Add($cert)
+        $store.Close()
+        $cert.Import($absolutePfxFilePath, $securepwd, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]"PersistKeySet")
+        $store = New-Object System.Security.Cryptography.X509Certificates.X509Store -ArgumentList "Root", CurrentUser
+        $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::"ReadWrite")
+        $store.Add($cert)
+        $store.Close()
+        # $buffer = [IO.File]::ReadAllBytes("$env:Wap_Project_Directory\cr.pfx")
+        # $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New($buffer, $env:CODESIGN_PWD)
         $bins = Get-ChildItem -Path $env:REPOROOT\sm\* -Include *.exe,*.dll -Recurse
         foreach ($bin in $bins){
-             Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com -FilePath $bin
+            Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com -FilePath $bin
         }
         Remove-Item -Path $env:Wap_Project_Directory\cr.pfx
 
