@@ -63,7 +63,7 @@ jobs:
         $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New($buffer, $env:CODESIGN_PWD)
         $bins = Get-ChildItem -Path $env:REPOROOT\sm\* -Include *.exe,*.dll -Recurse
         foreach ($bin in $bins){
-             Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com
+             Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com -FilePath $bin
         }
         Remove-Item -Path $env:Wap_Project_Directory\cr.pfx
 
