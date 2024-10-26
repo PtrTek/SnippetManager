@@ -9,6 +9,7 @@
 
 	<Identity
 	  Name="e7581308-b151-4161-a89c-adc73206c06b"
+	  Publisher="CN="Abbasoft, LLC, C=US E=peteabbas@outlook.com"" 
 	  Version="0.0.3.0" />
 
 	<Properties>
