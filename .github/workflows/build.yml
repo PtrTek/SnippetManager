@@ -56,11 +56,13 @@ jobs:
         Appx_Package_Build_Mode: SideLoadOnly
         Configuration: ${{ matrix.configuration }}
 
-
     - name: Sign App and Remove the pfx
       run: |
+        $securepwd = ConvertTo-SecureString "$env:CODESIGN_PWD" -AsPlainText -Force
+        Import-PfxCertficate -CertStoreLocation Cert:LocalMachine\Root -FilePath $env:Wap_Project_Directory\cr.pfx -Password "$securepwd"
         $buffer = [IO.File]::ReadAllBytes("$env:Wap_Project_Directory\cr.pfx")
         $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New($buffer, $env:CODESIGN_PWD)
+        
         $bins = Get-ChildItem -Path $env:REPOROOT\sm\* -Include *.exe,*.dll -Recurse
         foreach ($bin in $bins){
              Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com -FilePath $bin
