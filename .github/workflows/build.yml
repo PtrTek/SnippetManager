@@ -59,7 +59,7 @@ jobs:
 
     - name: Sign App and Remove the pfx
       run: |
-        $buffer = [IO.File]::ReadAllBytes("$env:Wap_Project_Diectory\cr.pfx")
+        $buffer = [IO.File]::ReadAllBytes("$env:Wap_Project_Directory\cr.pfx")
         $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::New($buffer, $env:CODESIGN_PWD)
         $bins = Get-ChildItem -Path $env:REPOROOT\sm\* -Include *.exe,*.dll -Recurse
         foreach ($bin in $bins){
