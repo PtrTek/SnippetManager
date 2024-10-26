@@ -65,7 +65,7 @@ jobs:
         foreach ($bin in $bins){
              Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com
         }
-        Remove-Item -Path $:env:Wap_Project_Directory\cr.pfx
+        Remove-Item -Path $env:Wap_Project_Directory\cr.pfx
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
