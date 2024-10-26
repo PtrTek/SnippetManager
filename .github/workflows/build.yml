@@ -20,6 +20,7 @@ jobs:
       CODESIGN_BASE64: ${{secrets.CODESIGN_B64}}
       GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       REPOROOT: ${{github.WORKSPACE}}
+      REPO-TOKEN: ${{secrets.PAT_TOKEN}}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -90,4 +91,4 @@ jobs:
     - name: Create Release
       run: gh release create v1.0.0 "$env:REPOROOT\snippet_manager.zip"
       env:
-        repo-token: ${{secrets.GITHUB_TOKEN}}
+        repo-token: ${{secrets.PAT_TOKEN}}
