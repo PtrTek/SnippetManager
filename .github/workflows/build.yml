@@ -51,7 +51,7 @@ jobs:
         New-Item -Path $env:REPOROOT -Name "sm" -ItemType "directory"
 
     - name: Create the app package
-      run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:PackageCertificateKeyFile=$env:Wap_Project_Directory\cr.pfx /p:PackageCertificatePassword=$env:CODESIGN_PWD -p:BaseOutputPath=$env:REPOROOT\sm
+      run: msbuild $env:Wap_Project_Path /p:Configuration=$env:Configuration /p:UapAppxPackageBuildMode=$env:Appx_Package_Build_Mode /p:PackageCertificateKeyFile=$env:Wap_Project_Directory\cr.pfx /p:PackageCertificatePassword=$env:CODESIGN_PWD -p:BaseOutputPath=$env:REPOROOT\sm\
       env:
         Appx_Package_Build_Mode: SideLoadOnly
         Configuration: ${{ matrix.configuration }}
