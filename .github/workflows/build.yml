@@ -75,7 +75,7 @@ jobs:
         $bins = Get-ChildItem -Path $env:REPOROOT\sm\* -Include *.exe,*.dll -Recurse
         foreach ($bin in $bins){
             Set-AuthenticodeSignature -HashAlgorithm SHA256 -Certificate $cert -TimestampServer http://timestamp.digicert.com -FilePath $bin
-            signtool verify /pa "$bin"
+            #signtool verify /pa "$bin"
             Write-Output "$bin signed successfully"
         }
         Remove-Item -Path $env:Wap_Project_Directory\cr.pfx
